@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Dynamic Navbar -->
+    <div id="navbar-container"></div>
+    
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">System Configuration</h1>
+        <!-- Placeholder for settings configuration -->
+    </div>
+    
+    <!-- Load navbar first, then main scripts -->
+    <script>
+        fetch('/components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+            })
+            .catch(error => console.error('Error loading navbar:', error));
+    </script>
+    <script src="script.js"></script>
+    <script>
+        protectPage(['Administrator']);
+    </script>
+</body>
+</html>

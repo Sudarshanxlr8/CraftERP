@@ -1,0 +1,590 @@
+<!-- Dynamic Navbar Component -->
+<nav id="dynamicNavbar" class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Logo and Brand -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl font-bold text-blue-600">CraftERP</h1>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-4">
+                <div id="navbarMenu" class="flex items-center space-x-2">
+                    <!-- Dynamic menu items will be inserted here -->
+                </div>
+                
+                <!-- User Profile Dropdown -->
+                    <div class="relative ml-4">
+                        <button id="profileDropdownBtn" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600 focus:outline-none group">
+                            <div class="w-10 h-10 user-avatar rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl">
+                                <span id="userInitial" class="text-white text-sm font-bold">U</span>
+                            </div>
+                            <div class="flex flex-col items-start">
+                                <span id="usernameDisplay" class="text-gray-700 font-semibold text-sm group-hover:text-blue-600 transition-colors">User</span>
+                                <span id="userRole" class="text-xs text-gray-500 group-hover:text-blue-500 transition-colors"></span>
+                            </div>
+                            <svg class="w-5 h-5 transition-transform group-hover:rotate-180 duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-lg shadow-2xl py-2 z-50 border border-gray-100">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-sm font-semibold text-gray-900" id="dropdownUserName">User</p>
+                            <p class="text-xs text-gray-500" id="dropdownUserEmail">user@example.com</p>
+                        </div>
+                        <a href="/profile" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 group">
+                            <svg class="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Profile
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 group">
+                            <svg class="w-4 h-4 mr-3 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Settings
+                        </a>
+                        <hr class="my-2 border-gray-100">
+                        <button id="logoutBtn" class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-all duration-200 group">
+                            <svg class="w-4 h-4 mr-3 text-red-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+                <button id="mobileMenuBtn" class="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-enhanced group">
+                    <svg class="w-6 h-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg rounded-b-lg border-t border-gray-100">
+        <div id="mobileNavbarMenu" class="px-4 py-4 space-y-2">
+            <!-- Dynamic mobile menu items will be inserted here -->
+        </div>
+        <div class="border-t border-gray-100 pt-4 pb-3">
+            <div class="flex items-center px-4 py-3 bg-gray-50 rounded-lg">
+                <div class="w-12 h-12 user-avatar rounded-full flex items-center justify-center mr-4 shadow-md">
+                    <span id="mobileUserInitial" class="text-white text-lg font-bold">U</span>
+                </div>
+                <div>
+                    <div id="mobileUsernameDisplay" class="text-base font-semibold text-gray-900">User</div>
+                    <div id="mobileUserRole" class="text-sm text-gray-500"></div>
+                </div>
+            </div>
+            <div class="mt-4 space-y-2">
+                <a href="/profile" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Profile
+                </a>
+                <button id="mobileLogoutBtn" class="flex items-center w-full px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-red-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Enhanced animations and hover effects */
+    .nav-item {
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+    
+    .nav-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .nav-item:hover::before {
+        left: 100%;
+    }
+    
+    .nav-item:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+    }
+    
+    .nav-item.active {
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        color: white;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .nav-item.active:hover {
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    /* Profile dropdown enhanced styles */
+    #profileDropdownBtn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    #profileDropdownBtn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+    
+    #profileDropdownBtn:hover::after {
+        width: 100px;
+        height: 100px;
+    }
+    
+    #profileDropdownBtn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    }
+    
+    /* User avatar with gradient animation */
+    .user-avatar {
+        background: linear-gradient(45deg, #3B82F6, #8B5CF6, #EC4899);
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+        transition: all 0.3s ease;
+    }
+    
+    .user-avatar:hover {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* Dropdown menu enhanced styles */
+    #profileDropdown {
+        transform-origin: top right;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    
+    #profileDropdown:not(.hidden) {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    /* Mobile menu enhanced styles */
+    #mobileMenu {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-height: 0;
+        overflow: hidden;
+    }
+    
+    #mobileMenu:not(.hidden) {
+        max-height: 500px;
+    }
+    
+    /* Smooth transitions for all interactive elements */
+    .transition-enhanced {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Hover effects for nav items */
+    .nav-hover-effect {
+        position: relative;
+    }
+    
+    .nav-hover-effect::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    
+    .nav-hover-effect:hover::before {
+        width: 80%;
+    }
+    
+    /* Ripple effect for buttons */
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(59, 130, 246, 0.3);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    /* Smooth transitions for mobile menu */
+    #mobileMenu {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    
+    #mobileMenu:not(.hidden) {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Enhanced button interactions */
+    button {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    button:active {
+        transform: scale(0.98);
+    }
+</style>
+
+<script>
+    // Role-based navigation configuration
+    const pageRoles = {
+        '/index': ['administrator', 'manufacturing manager', 'inventory manager'],
+        '/users': ['administrator'],
+        '/mo_list': ['administrator', 'manufacturing manager'],
+        '/mo_create': ['administrator', 'manufacturing manager'],
+        '/wo_list': ['administrator', 'manufacturing manager', 'operator'],
+        '/wo-task': ['administrator', 'manufacturing manager', 'operator'],
+        '/bom_list': ['administrator', 'manufacturing manager'],
+        '/bom_create': ['administrator'],
+        '/inventory': ['administrator', 'manufacturing manager', 'inventory manager'],
+        '/product_master': ['inventory manager'],
+        '/reports': ['administrator', 'manufacturing manager', 'inventory manager'],
+        '/settings': ['administrator'],
+        '/profile': ['manufacturing manager', 'inventory manager', 'operator']
+    };
+
+    // Navigation items with icons and descriptions
+    const navItems = {
+        '/index': { title: 'Dashboard', icon: '📊', description: 'Main dashboard' },
+        '/users': { title: 'Users', icon: '👥', description: 'Manage users' },
+        '/mo_list': { title: 'Manufacturing Orders', icon: '🏭', description: 'View manufacturing orders' },
+        '/mo_create': { title: 'Create MO', icon: '➕', description: 'Create new manufacturing order' },
+        '/wo_list': { title: 'Work Orders', icon: '🔧', description: 'View work orders' },
+        '/wo-task': { title: 'Work Tasks', icon: '⚙️', description: 'Work order tasks' },
+        '/bom_list': { title: 'BOM List', icon: '📋', description: 'Bill of materials' },
+        '/bom_create': { title: 'Create BOM', icon: '📝', description: 'Create new BOM' },
+        '/inventory': { title: 'Inventory', icon: '📦', description: 'Inventory management' },
+        '/product_master': { title: 'Products', icon: '🏷️', description: 'Product master data' },
+        '/reports': { title: 'Reports', icon: '📈', description: 'View reports' },
+        '/settings': { title: 'Settings', icon: '⚙️', description: 'System settings' },
+        '/profile': { title: 'Profile', icon: '👤', description: 'User profile' }
+    };
+
+    // Function to get current user role
+    function getCurrentUserRole() {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+        
+        try {
+            const decoded = decodeJWT(token);
+            return decoded.role.toLowerCase();
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return null;
+        }
+    }
+
+    // Function to check if user has access to a page
+    function hasAccess(pagePath, userRole) {
+        if (!pageRoles[pagePath]) return false;
+        return pageRoles[pagePath].some(role => role.toLowerCase() === userRole.toLowerCase());
+    }
+
+    // Function to render navigation based on user role
+    function renderNavigation() {
+        const userRole = getCurrentUserRole();
+        if (!userRole) {
+            window.location.href = '/login';
+            return;
+        }
+
+        // Update user display
+        updateUserDisplay();
+
+        // Filter navigation items based on role
+        const accessibleItems = Object.keys(navItems).filter(path => hasAccess(path, userRole));
+        
+        // Render desktop navigation
+        const desktopMenu = document.getElementById('navbarMenu');
+        desktopMenu.innerHTML = '';
+        
+        accessibleItems.forEach(path => {
+            const item = navItems[path];
+            const currentPath = window.location.pathname;
+            const isActive = currentPath === path;
+            
+            const navLink = document.createElement('a');
+            navLink.href = path;
+            navLink.className = `nav-item nav-hover-effect px-4 py-2 rounded-lg text-sm font-medium transition-enhanced ${
+                isActive 
+                    ? 'active text-white' 
+                    : 'text-gray-700 hover:text-blue-600 bg-gray-50 hover:bg-blue-50'
+            }`;
+            navLink.innerHTML = `
+                <span class="relative z-10 mr-2">${item.icon}</span>
+                <span class="relative z-10">${item.title}</span>
+                ${isActive ? '<div class="absolute inset-0 bg-blue-500 rounded-lg opacity-20"></div>' : ''}
+            `;
+            desktopMenu.appendChild(navLink);
+        });
+
+        // Render mobile navigation
+        const mobileMenu = document.getElementById('mobileNavbarMenu');
+        mobileMenu.innerHTML = '';
+        
+        accessibleItems.forEach(path => {
+            const item = navItems[path];
+            const currentPath = window.location.pathname;
+            const isActive = currentPath === path;
+            
+            const navLink = document.createElement('a');
+            navLink.href = path;
+            navLink.className = `block px-4 py-3 rounded-lg text-base font-medium transition-enhanced ${
+                isActive 
+                    ? 'active bg-blue-500 text-white' 
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+            }`;
+            navLink.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 ${isActive ? 'bg-white' : 'bg-blue-400'} rounded-full"></div>
+                    <span>${item.icon}</span>
+                    <span>${item.title}</span>
+                </div>
+            `;
+            mobileMenu.appendChild(navLink);
+        });
+    }
+
+    // Function to update user display
+    function updateUserDisplay() {
+        const token = localStorage.getItem('token');
+        console.log('Token found:', !!token);
+        
+        try {
+            const usernameElement = document.getElementById('usernameDisplay');
+            const userRoleElement = document.getElementById('userRole');
+            const userInitialElement = document.getElementById('userInitial');
+            const dropdownUserNameElement = document.getElementById('dropdownUserName');
+            const dropdownUserEmailElement = document.getElementById('dropdownUserEmail');
+            const mobileUsernameElement = document.getElementById('mobileUsernameDisplay');
+            const mobileUserInitialElement = document.getElementById('mobileUserInitial');
+            
+            if (!usernameElement || !userRoleElement || !userInitialElement || !dropdownUserNameElement || !dropdownUserEmailElement || !mobileUsernameElement || !mobileUserInitialElement) {
+                console.log('User display elements not found');
+                return;
+            }
+            
+            let username = localStorage.getItem('username');
+            let userRole = localStorage.getItem('role');
+            let userEmail = localStorage.getItem('email');
+            
+            if ((!username || !userRole) && token) {
+                const decoded = decodeJWT(token);
+                console.log('Decoded JWT:', decoded);
+                username = username || decoded.username || decoded.email || 'User';
+                userRole = userRole || decoded.role || 'User';
+                userEmail = userEmail || decoded.email || 'user@example.com';
+            }
+            
+            if (!username) username = 'User';
+            if (!userRole) userRole = 'User';
+            if (!userEmail) userEmail = 'user@example.com';
+            
+            const initial = username.charAt(0).toUpperCase();
+            
+            console.log('Setting username to:', username);
+            usernameElement.textContent = username;
+            userRoleElement.textContent = userRole;
+            userInitialElement.textContent = initial;
+            dropdownUserNameElement.textContent = username;
+            dropdownUserEmailElement.textContent = userEmail;
+            mobileUsernameElement.textContent = username;
+            mobileUserInitialElement.textContent = initial;
+            
+            // Add animation to user avatar
+            const avatar = userInitialElement.parentElement;
+            avatar.style.animation = 'none';
+            avatar.offsetHeight;
+            avatar.style.animation = 'gradient-shift 3s ease infinite';
+        } catch (error) {
+            console.error('Error updating user display:', error);
+            if (token) console.error('Token:', token);
+            const username = localStorage.getItem('username') || 'User';
+            const userRole = localStorage.getItem('role') || 'User';
+            const userEmail = localStorage.getItem('email') || 'user@example.com';
+            const initial = username.charAt(0).toUpperCase();
+            
+            const usernameElement = document.getElementById('usernameDisplay');
+            const userRoleElement = document.getElementById('userRole');
+            const userInitialElement = document.getElementById('userInitial');
+            const dropdownUserNameElement = document.getElementById('dropdownUserName');
+            const dropdownUserEmailElement = document.getElementById('dropdownUserEmail');
+            const mobileUsernameElement = document.getElementById('mobileUsernameDisplay');
+            const mobileUserInitialElement = document.getElementById('mobileUserInitial');
+            
+            if (usernameElement) usernameElement.textContent = username;
+            if (userRoleElement) userRoleElement.textContent = userRole;
+            if (userInitialElement) userInitialElement.textContent = initial;
+            if (dropdownUserNameElement) dropdownUserNameElement.textContent = username;
+            if (dropdownUserEmailElement) dropdownUserEmailElement.textContent = userEmail;
+            if (mobileUsernameElement) mobileUsernameElement.textContent = username;
+            if (mobileUserInitialElement) mobileUserInitialElement.textContent = initial;
+        }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        renderNavigation();
+        updateUserDisplay();
+        
+        // Add hover sound effects (optional)
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(0) scale(1)';
+                }
+            });
+        });
+        
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // Profile dropdown toggle
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+        
+        if (profileDropdownBtn && profileDropdown) {
+            profileDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                profileDropdown.classList.add('hidden');
+            });
+        }
+
+        // Mobile menu toggle with animation
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.remove('hidden');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('opacity-100');
+                        mobileMenu.classList.remove('opacity-0');
+                    }, 10);
+                    mobileMenuBtn.classList.add('text-blue-600');
+                    mobileMenuBtn.classList.add('bg-blue-50');
+                } else {
+                    mobileMenu.classList.add('opacity-0');
+                    mobileMenu.classList.remove('opacity-100');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                    }, 300);
+                    mobileMenuBtn.classList.remove('text-blue-600');
+                    mobileMenuBtn.classList.remove('bg-blue-50');
+                }
+            });
+        }
+
+        // Logout buttons
+        const logoutBtn = document.getElementById('logoutBtn');
+        const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+        
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = '/login';
+        }
+        
+        if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+        if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', handleLogout);
+    });
+
+    // JWT decode function (if not already defined)
+    if (typeof decodeJWT === 'undefined') {
+        function decodeJWT(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    }
+</script>

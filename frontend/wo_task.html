@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Work Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+
+<!-- Access restricted to Admin, Manager, and Operator -->
+<body class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50" x-data="woTask()" x-init="init()">
+    <!-- Success/Error Notifications -->
+    <div x-show="showNotification" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         :class="notificationType === 'success' ? 'bg-green-500' : 'bg-red-500'"
+         class="fixed top-4 right-4 text-white px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center">
+        <i :class="notificationType === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'" class="mr-3 text-xl"></i>
+        <span class="font-semibold" x-text="notificationMessage"></span>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div x-show="loading" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+            <p class="text-gray-700 font-semibold text-lg">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Completion Confirmation Modal -->
+    <div x-show="showCompleteModal" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-md mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Complete Task?</h3>
+                <p class="text-gray-600 mb-6">Are you sure you want to mark this task as completed? This action cannot be undone.</p>
+                <div class="flex space-x-3">
+                    <button @click="confirmComplete" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        Yes, Complete
+                    </button>
+                    <button @click="showCompleteModal = false" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div x-show="showCommentModal" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl max-w-lg mx-4">
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Add Comment</h3>
+                <p class="text-gray-600">Add any notes or issues about this task:</p>
+            </div>
+            <textarea 
+                x-model="currentComment" 
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows="4"
+                placeholder="e.g., Machine issue, Waiting for material, etc.">
+            </textarea>
+            <div class="flex space-x-3 mt-6">
+                <button @click="submitComment" class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                    Submit Comment
+                </button>
+                <button @click="showCommentModal = false" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="navbar-container"></div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2 underline">My Work Orders</h1>
+                        <p class="text-gray-600">Here you can track and update the progress of your assigned tasks.</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button @click="goBack" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to MO Detail
+                        </button>
+                        <button @click="saveChanges" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Overall Progress</span>
+                    <span class="text-sm text-gray-600">
+                        <span x-text="completedTasks"></span> of <span x-text="totalTasks"></span> tasks completed
+                    </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-3 rounded-full transition-all duration-500"
+                         :style="`width: ${progress}%`"></div>
+                </div>
+                <p class="text-xs text-gray-600 mt-2" x-text="`${progress}% Complete`"></p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 mb-6">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center">
+                        <label class="text-sm font-medium text-gray-700 mr-2">Filter by Status:</label>
+                        <select x-model="statusFilter" @change="filterTasks" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Tasks</option>
+                            <option value="not_started">Not Started</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="paused">Paused</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <button @click="clearFilter" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                        Clear Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WO ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Related MO</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operation</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Work Center</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Planned Duration</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <template x-for="task in filteredTasks" :key="task.id">
+                                <tr class="hover:bg-gray-100 even:bg-gray-50 transition-colors duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="task.id"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900" x-text="`MO #${task.mo_id}`"></div>
+                                            <div class="text-xs text-gray-500" x-text="task.product_name || 'Unknown Product'"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="task.operation_name"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="task.work_center || 'Not Assigned'"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="task.planned_duration + ' min'"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                             :class="getStatusClass(task.status)">
+                                            <i :class="getStatusIcon(task.status)" class="mr-1"></i>
+                                            <span x-text="formatStatus(task.status)"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button x-show="task.status !== 'in_progress' && task.status !== 'completed'" 
+                                                    @click="startTask(task)" 
+                                                    class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors text-xs">
+                                                <i class="fas fa-play mr-1"></i>Start
+                                            </button>
+                                            <button x-show="task.status === 'in_progress'" 
+                                                    @click="pauseTask(task)" 
+                                                    class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition-colors text-xs">
+                                                <i class="fas fa-pause mr-1"></i>Pause
+                                            </button>
+                                            <button x-show="task.status !== 'completed'" 
+                                                    @click="openCompleteModal(task)" 
+                                                    class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors text-xs">
+                                                <i class="fas fa-check mr-1"></i>Complete
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button @click="openCommentModal(task)" class="text-indigo-600 hover:text-indigo-900 transition-colors">
+                                            <i class="fas fa-comment mr-1"></i>Add Comment
+                                        </button>
+                                        <div x-show="task.comments" class="mt-1 text-xs text-gray-500" x-text="task.comments"></div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div x-show="filteredTasks.length === 0" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-4"></i>
+                        <p>No tasks found matching your criteria.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('woTask', () => ({
+                loading: false,
+                showNotification: false,
+                notificationMessage: '',
+                notificationType: 'info',
+                showCompleteModal: false,
+                showCommentModal: false,
+                currentTask: null,
+                currentComment: '',
+                statusFilter: '',
+                
+                // Data
+                tasks: [],
+                filteredTasks: [],
+                userRole: '',
+                userId: null,
+                
+                // Computed properties
+                get completedTasks() {
+                    return this.tasks.filter(task => task.status === 'completed').length;
+                },
+                
+                get totalTasks() {
+                    return this.tasks.length;
+                },
+                
+                get progress() {
+                    return this.totalTasks > 0 ? Math.round((this.completedTasks / this.totalTasks) * 100) : 0;
+                },
+                
+                init() {
+                    protectPage(['Administrator', 'Manufacturing Manager', 'Operator']);
+                    this.setUserData();
+                    this.loadTasks();
+                    this.loadNavbar();
+                },
+                
+                setUserData() {
+                    const token = localStorage.getItem('access_token');
+                    if (token) {
+                        try {
+                            const decoded = this.decodeJWT(token);
+                            this.userRole = decoded.role;
+                            this.userId = decoded.user_id;
+                        } catch (error) {
+                            console.error('Error decoding token:', error);
+                        }
+                    }
+                },
+                
+                loadNavbar() {
+                    fetch('/components/navbar.html')
+                        .then(response => response.text())
+                        .then(data => {
+                            document.getElementById('navbar-container').innerHTML = data;
+                        })
+                        .catch(error => console.error('Error loading navbar:', error));
+                },
+                
+                async loadTasks() {
+                    this.loading = true;
+                    try {
+                        let endpoint;
+                        if (this.userRole === 'administrator' || this.userRole === 'manufacturing manager') {
+                            endpoint = '/api/wos';
+                        } else {
+                            endpoint = '/api/wos/assigned';
+                        }
+                        
+                        const response = await fetch(endpoint, {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to load tasks');
+                        }
+                        
+                        const data = await response.json();
+                        this.tasks = data.work_orders || data;
+                        this.filteredTasks = [...this.tasks];
+                        
+                    } catch (error) {
+                        console.error('Error loading tasks:', error);
+                        this.showNotification('Error loading work orders', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                getStatusClass(status) {
+                    const classes = {
+                        'not_started': 'bg-gray-100 text-gray-800',
+                        'in_progress': 'bg-yellow-100 text-yellow-800',
+                        'paused': 'bg-orange-100 text-orange-800',
+                        'completed': 'bg-green-100 text-green-800'
+                    };
+                    return classes[status] || 'bg-gray-100 text-gray-800';
+                },
+                
+                getStatusIcon(status) {
+                    const icons = {
+                        'not_started': 'fas fa-clock',
+                        'in_progress': 'fas fa-play',
+                        'paused': 'fas fa-pause',
+                        'completed': 'fas fa-check'
+                    };
+                    return icons[status] || 'fas fa-question';
+                },
+                
+                formatStatus(status) {
+                    return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                },
+                
+                filterTasks() {
+                    if (!this.statusFilter) {
+                        this.filteredTasks = [...this.tasks];
+                    } else {
+                        this.filteredTasks = this.tasks.filter(task => task.status === this.statusFilter);
+                    }
+                },
+                
+                clearFilter() {
+                    this.statusFilter = '';
+                    this.filteredTasks = [...this.tasks];
+                },
+                
+                async startTask(task) {
+                    await this.updateTaskStatus(task, 'in_progress', 'Task started successfully');
+                },
+                
+                async pauseTask(task) {
+                    await this.updateTaskStatus(task, 'paused', 'Task paused');
+                },
+                
+                openCompleteModal(task) {
+                    this.currentTask = task;
+                    this.showCompleteModal = true;
+                },
+                
+                async confirmComplete() {
+                    if (this.currentTask) {
+                        await this.updateTaskStatus(this.currentTask, 'completed', 'Task completed successfully');
+                        this.showCompleteModal = false;
+                        this.currentTask = null;
+                    }
+                },
+                
+                openCommentModal(task) {
+                    this.currentTask = task;
+                    this.currentComment = task.comments || '';
+                    this.showCommentModal = true;
+                },
+                
+                async submitComment() {
+                    if (this.currentTask && this.currentComment.trim()) {
+                        await this.updateTaskStatus(this.currentTask, this.currentTask.status, 'Comment added successfully');
+                        this.showCommentModal = false;
+                        this.currentTask = null;
+                        this.currentComment = '';
+                    }
+                },
+                
+                async updateTaskStatus(task, newStatus, successMessage) {
+                    this.loading = true;
+                    try {
+                        const response = await fetch(`/api/wos/${task.id}/status`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                            },
+                            body: JSON.stringify({ 
+                                status: newStatus,
+                                comments: this.currentComment || task.comments
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            task.status = newStatus;
+                            if (this.currentComment) {
+                                task.comments = this.currentComment;
+                            }
+                            this.showNotification(successMessage, 'success');
+                            this.filterTasks();
+                        } else {
+                            const data = await response.json();
+                            this.showNotification(data.message || 'Error updating task status', 'error');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error updating task status:', error);
+                        this.showNotification('Error updating task status', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                saveChanges() {
+                    this.showNotification('All changes saved successfully', 'success');
+                },
+                
+                goBack() {
+                    window.location.href = '/mo-detail';
+                },
+                
+                showNotification(message, type = 'info') {
+                    this.notificationMessage = message;
+                    this.notificationType = type;
+                    this.showNotification = true;
+                    
+                    setTimeout(() => {
+                        this.showNotification = false;
+                    }, 4000);
+                },
+                
+                decodeJWT(token) {
+                    try {
+                        const base64Url = token.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        }).join(''));
+                        return JSON.parse(jsonPayload);
+                    } catch (error) {
+                        console.error('Error decoding JWT:', error);
+                        return null;
+                    }
+                }
+            }));
+        });
+
+        // Load navbar on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/components/navbar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading navbar:', error));
+        });
+    </script>
+</body>
+</html>

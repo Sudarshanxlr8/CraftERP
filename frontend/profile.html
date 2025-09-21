@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Dynamic Navbar -->
+    <div id="navbar-container"></div>
+    
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">User Profile</h1>
+        
+        <div class="bg-white p-6 rounded shadow-md max-w-2xl mx-auto">
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4">Profile Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Username</label>
+                        <p id="profileUsername" class="mt-1 text-gray-900">Loading...</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <p id="profileEmail" class="mt-1 text-gray-900">Loading...</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Role</label>
+                        <p id="profileRole" class="mt-1 text-gray-900">Loading...</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Member Since</label>
+                        <p id="profileCreated" class="mt-1 text-gray-900">Loading...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-semibold mb-4">Account Actions</h3>
+                <div class="space-y-3">
+                    <button id="changePasswordBtn" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
+                        Change Password
+                    </button>
+                    <button id="logoutBtn" class="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load navbar first, then main scripts -->
+    <script>
+        fetch('/components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+                // Load profile data after navbar is loaded
+                loadProfileData();
+            })
+            .catch(error => console.error('Error loading navbar:', error));
+    </script>
+    <script src="script.js"></script>
+    <script>
+        protectPage(['Manufacturing Manager', 'Inventory Manager', 'Operator']);
+        
+        function loadProfileData() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            try {
+                const decoded = decodeJWT(token);
+                document.getElementById('profileUsername').textContent = decoded.username || 'N/A';
+                document.getElementById('profileEmail').textContent = decoded.email || 'N/A';
+                document.getElementById('profileRole').textContent = decoded.role || 'N/A';
+                document.getElementById('profileCreated').textContent = decoded.created_at ? new Date(decoded.created_at).toLocaleDateString() : 'N/A';
+            } catch (error) {
+                console.error('Error loading profile data:', error);
+            }
+        }
+        
+        // Logout button functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        });
+        
+        // Change password button (placeholder)
+        document.getElementById('changePasswordBtn').addEventListener('click', function() {
+            alert('Change password functionality will be implemented soon!');
+        });
+    </script>
+</body>
+</html>

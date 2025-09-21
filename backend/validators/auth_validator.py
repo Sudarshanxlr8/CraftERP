@@ -6,3 +6,7 @@ def validate_email(email):
 
 def validate_password(password):
     return len(password) >= 6
+
+def validate_role(role):
+    allowed_roles = ['Administrator', 'Manufacturing Manager', 'Operator', 'Inventory Manager']
+    return role in allowed_roles

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Bill of Materials - CraftERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div id="navbar-container"></div>
+    
+    <div class="container mx-auto p-6 max-w-6xl">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Create Bill of Materials</h1>
+            <p class="text-gray-600">Define components and operations for manufacturing</p>
+        </div>
+
+        <form id="bomForm" class="space-y-8">
+            <!-- BOM Information -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-100 p-3 rounded-lg mr-4"><span class="text-2xl">📦</span></div>
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-800">BOM Information</h2>
+                        <p class="text-gray-600">Define the BOM name and the product it represents</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="bomId" class="block text-sm font-medium text-gray-700 mb-2">
+                            BOM ID <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="bomId" name="bom_id" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="e.g., BOM-001">
+                    </div>
+                    <div>
+                        <label for="productName" class="block text-sm font-medium text-gray-700 mb-2">
+                            Product Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="productName" name="product_name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="e.g., Chair">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Components -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-3 rounded-lg mr-4"><span class="text-2xl">🔧</span></div>
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">Components & Materials</h2>
+                            <p class="text-gray-600">Add all materials needed for this product</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addComponentRow()" 
+                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        <span class="mr-2">➕</span>Add Component
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full" id="componentsTable">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Component</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="componentsBody"></tbody>
+                    </table>
+                </div>
+                
+                <div id="noComponents" class="text-center py-8 text-gray-500">
+                    <div class="text-4xl mb-2">📋</div>
+                    <p>No components added. Click "Add Component" to start.</p>
+                </div>
+            </div>
+
+            <!-- Operations -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="bg-orange-100 p-3 rounded-lg mr-4"><span class="text-2xl">⚙️</span></div>
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">Manufacturing Operations</h2>
+                            <p class="text-gray-600">Define manufacturing steps</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addOperationRow()" 
+                            class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        <span class="mr-2">➕</span>Add Operation
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full" id="operationsTable">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Operation</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Work Center</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time (min)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operationsBody"></tbody>
+                    </table>
+                </div>
+                
+                <div id="noOperations" class="text-center py-8 text-gray-500">
+                    <div class="text-4xl mb-2">🔧</div>
+                    <p>No operations added. Click "Add Operation" to define steps.</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-4">
+                <button type="button" onclick="resetForm()" 
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Reset Form
+                </button>
+                <button type="submit" 
+                        class="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 font-semibold shadow-lg">
+                    💾 Save BOM
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <script src="script.js"></script>
+    <script>
+        let finishedProducts = [], rawMaterials = [], workCenters = [];
+        let componentRowCount = 0, operationRowCount = 0;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadInitialData();
+            addComponentRow();
+            addOperationRow();
+        });
+
+        async function loadInitialData() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Load work centers first (they don't require authentication)
+                try {
+                    const workCentersRes = await fetch('/api/workcenters');
+                    
+                    if (workCentersRes.ok) {
+                        workCenters = await workCentersRes.json();
+                    } else {
+                        console.error('Failed to load work centers:', workCentersRes.status);
+                        workCenters = []; // Set empty array as fallback
+                    }
+                } catch (wcError) {
+                    console.error('Error loading work centers:', wcError);
+                    workCenters = []; // Set empty array as fallback
+                }
+                
+                // Load products (may require authentication)
+                try {
+                    const productsRes = await fetch('/api/products', { 
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {} 
+                    });
+                    
+                    if (productsRes.ok) {
+                        const products = await productsRes.json();
+                        finishedProducts = products.filter(p => p.type === 'finished');
+                        rawMaterials = products.filter(p => p.type === 'raw');
+                    } else {
+                        console.error('Failed to load products:', productsRes.status);
+                        finishedProducts = [];
+                        rawMaterials = [];
+                    }
+                } catch (prodError) {
+                    console.error('Error loading products:', prodError);
+                    finishedProducts = [];
+                    rawMaterials = [];
+                }
+                
+                populateDropdowns();
+                
+            } catch (error) {
+                console.error('Critical error in loadInitialData:', error);
+                showMessage(`Error loading data: ${error.message}`, 'error');
+            }
+        }
+
+        function populateDropdowns() {
+            // Populate any existing work center dropdowns
+            if (workCenters && workCenters.length > 0) {
+                const workCenterSelects = document.querySelectorAll('select[name="work_center_id"]');
+                workCenterSelects.forEach(select => {
+                    // Only update if it's empty (first option is the placeholder)
+                    if (select.options.length <= 1) {
+                        workCenters.forEach(center => {
+                            const option = document.createElement('option');
+                            option.value = center.id;
+                            option.textContent = center.name;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+            }
+        }
+
+        function addComponentRow() {
+            componentRowCount++;
+            const tbody = document.getElementById('componentsBody');
+            const row = document.createElement('tr');
+            row.id = `componentRow${componentRowCount}`;
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            
+            row.innerHTML = `
+                <td class="px-4 py-3">
+                    <input type="text" name="component_name" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
+                           placeholder="Enter component name">
+                </td>
+                <td class="px-4 py-3">
+                    <input type="number" name="component_quantity" min="0.1" step="0.1" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" placeholder="1.0">
+                </td>
+                <td class="px-4 py-3">
+                    <select name="component_unit" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                        <option value="pcs">pcs</option><option value="kg">kg</option><option value="m">m</option>
+                        <option value="m2">m²</option><option value="liter">liter</option><option value="box">box</option>
+                    </select>
+                </td>
+                <td class="px-4 py-3">
+                    <button type="button" onclick="removeComponentRow(${componentRowCount})" 
+                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                        Remove
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            updateNoComponentsMessage();
+        }
+
+        function removeComponentRow(rowId) {
+            const row = document.getElementById(`componentRow${rowId}`);
+            if (row) {
+                row.remove();
+                updateNoComponentsMessage();
+            }
+        }
+
+        function updateNoComponentsMessage() {
+            const tbody = document.getElementById('componentsBody');
+            const noComponents = document.getElementById('noComponents');
+            noComponents.style.display = tbody.children.length === 0 ? 'block' : 'none';
+        }
+
+        function addOperationRow() {
+            operationRowCount++;
+            const tbody = document.getElementById('operationsBody');
+            const row = document.createElement('tr');
+            row.id = `operationRow${operationRowCount}`;
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            
+            // Create work center options
+            const workCenterOptions = workCenters && workCenters.length > 0 
+                ? workCenters.map(center => `<option value="${center.id}">${center.name}</option>`).join('')
+                : '<option value="">No work centers available</option>';
+            
+            row.innerHTML = `
+                <td class="px-4 py-3">
+                    <input type="text" name="operation_name" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                           placeholder="e.g., Assemble, Paint">
+                </td>
+                <td class="px-4 py-3">
+                    <select name="work_center_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                        <option value="">Select work center...</option>
+                        ${workCenterOptions}
+                    </select>
+                </td>
+                <td class="px-4 py-3">
+                    <input type="number" name="time_required" min="1" step="1" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="30">
+                </td>
+                <td class="px-4 py-3">
+                    <button type="button" onclick="removeOperationRow(${operationRowCount})" 
+                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                        Remove
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            updateNoOperationsMessage();
+        }
+
+        function removeOperationRow(rowId) {
+            const row = document.getElementById(`operationRow${rowId}`);
+            if (row) {
+                row.remove();
+                updateNoOperationsMessage();
+            }
+        }
+
+        function updateNoOperationsMessage() {
+            const tbody = document.getElementById('operationsBody');
+            const noOperations = document.getElementById('noOperations');
+            noOperations.style.display = tbody.children.length === 0 ? 'block' : 'none';
+        }
+
+        function resetForm() {
+            if (confirm('Reset form? All data will be lost.')) {
+                document.getElementById('bomForm').reset();
+                document.getElementById('componentsBody').innerHTML = '';
+                document.getElementById('operationsBody').innerHTML = '';
+                addComponentRow();
+                addOperationRow();
+            }
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `p-4 rounded-lg shadow-lg mb-2 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+            messageDiv.textContent = message;
+            container.appendChild(messageDiv);
+            setTimeout(() => messageDiv.remove(), 5000);
+        }
+
+        // Form submission
+        document.getElementById('bomForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const bomId = document.getElementById('bomId').value;
+            const productName = document.getElementById('productName').value;
+            
+            if (!bomId) {
+                showMessage('Please enter a BOM ID.', 'error');
+                return;
+            }
+            
+            if (!productName) {
+                showMessage('Please enter a product name.', 'error');
+                return;
+            }
+            
+            const components = [];
+            const componentRows = document.querySelectorAll('#componentsBody tr');
+            if (componentRows.length === 0) {
+                showMessage('Please add at least one component.', 'error');
+                return;
+            }
+            
+            componentRows.forEach(row => {
+                const componentName = row.querySelector('[name="component_name"]').value;
+                const quantity = row.querySelector('[name="component_quantity"]').value;
+                const unit = row.querySelector('[name="component_unit"]').value;
+                
+                if (componentName && quantity && unit) {
+                    components.push({
+                        component_name: componentName,
+                        quantity: parseFloat(quantity),
+                        unit: unit
+                    });
+                }
+            });
+            
+            const operations = [];
+            const operationRows = document.querySelectorAll('#operationsBody tr');
+            
+            operationRows.forEach(row => {
+                const operationName = row.querySelector('[name="operation_name"]').value;
+                const workCenterId = row.querySelector('[name="work_center_id"]').value;
+                const timeRequired = row.querySelector('[name="time_required"]').value;
+                
+                if (operationName && workCenterId && timeRequired) {
+                    operations.push({
+                        name: operationName,
+                        work_center_id: workCenterId,  // Keep as string (MongoDB ObjectId)
+                        time_required: parseFloat(timeRequired)
+                    });
+                }
+            });
+            
+            const formData = {
+                bom_id: bomId,
+                product_name: productName,
+                items: components,
+                operations: operations
+            };
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showMessage('Please login to create BOM.', 'error');
+                    return;
+                }
+                
+                const response = await fetch('/api/boms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage('BOM created successfully!', 'success');
+                    setTimeout(() => window.location.href = '/bom', 2000);
+                } else {
+                    console.error('BOM creation error:', result);
+                    showMessage(result.error || result.message || 'Error creating BOM.', 'error');
+                }
+            } catch (error) {
+                console.error('BOM creation exception:', error);
+                showMessage('Error creating BOM. Please try again.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

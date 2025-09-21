@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Center Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Work Center Detail</h1>
+        
+        <!-- WC Properties -->
+        <div id="wcProperties" class="bg-white p-4 rounded shadow-md mb-6">
+            <!-- Editable fields will be loaded here -->
+        </div>
+        
+        <!-- Update Status (for Managers/Admins) -->
+        <div id="statusUpdate" class="mb-4">
+            <label for="status" class="block text-sm font-medium text-gray-700">Update Status</label>
+            <select id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <option value="active">Active</option>
+                <option value="idle">Idle</option>
+                <option value="down">Down</option>
+            </select>
+            <button onclick="updateWCStatus()" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded">Update Status</button>
+        </div>
+        
+        <!-- Utilization View -->
+        <div class="bg-white p-4 rounded shadow-md">
+            <h2 class="text-xl font-semibold mb-2">Utilization</h2>
+            <div id="utilizationData"></div>
+        </div>
+        
+        <!-- Edit and Save Buttons -->
+        <div class="flex gap-2 mt-4">
+            <button onclick="enableEdit()" class="bg-yellow-500 text-white px-4 py-2 rounded">Edit Properties</button>
+            <button onclick="saveWC()" id="saveButton" class="hidden bg-green-500 text-white px-4 py-2 rounded">Save Changes</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        protectPage(['Manufacturing Manager', 'Administrator', 'Operator']);
+        const urlParams = new URLSearchParams(window.location.search);
+        const wcId = urlParams.get('id');
+        if (wcId) {
+            loadWCDetail(wcId);
+            loadUtilization(wcId);
+        }
+        // Hide status update if not manager/admin
+        const role = getUserRole(); // Assuming function from script.js
+        if (role !== 'manufacturing_manager' && role !== 'admin') {
+            document.getElementById('statusUpdate').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

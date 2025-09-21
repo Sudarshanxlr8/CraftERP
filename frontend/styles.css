@@ -1,5 +1,9 @@
-/* Additional custom styles if needed (Tailwind is handled via CDN) */
-/* For example: */
+/* Basic custom styles to complement Tailwind */
 body {
     font-family: 'Arial', sans-serif;
+    background-color: #f3f4f6; /* Light gray for consistency */
+}
+
+input:focus, select:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Blue ring on focus */
 }

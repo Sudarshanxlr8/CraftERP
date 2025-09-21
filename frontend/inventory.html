@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Dynamic Navbar -->
+    <div id="navbar-container"></div>
+    
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Inventory Management</h1>
+        <p>Available for Inventory Manager.</p>
+        
+        <!-- Form to Update Inventory -->
+        <form id="inventoryForm" class="bg-white p-6 rounded shadow-md mb-6">
+            <div class="mb-4">
+                <label for="itemId" class="block text-sm font-medium text-gray-700">Item ID</label>
+                <input type="text" id="itemId" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity to Add/Subtract</label>
+                <input type="number" id="quantity" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update Inventory</button>
+        </form>
+        
+        <!-- Inventory List -->
+        <div id="inventoryList" class="bg-white p-6 rounded shadow-md"></div>
+    </div>
+    
+    <!-- Load navbar first, then main scripts -->
+    <script>
+        fetch('/components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+            })
+            .catch(error => console.error('Error loading navbar:', error));
+    </script>
+    <script src="script.js"></script>
+    <script>
+        protectPage(['Inventory Manager']);
+        document.getElementById('inventoryForm').addEventListener('submit', updateInventory);
+        loadInventory();
+    </script>
+    
+</body>
+</html>

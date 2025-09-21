@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Work Centers</title>
+</head>
+<body>
+    <h1>Work Centers Test</h1>
+    <div id="result"></div>
+    <div id="error"></div>
+    
+    <script>
+        async function testWorkCenters() {
+            try {
+                const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2QzMzNlYjI4ZTZkNmFhZDIyZjQyYSIsInVzZXJuYW1lIjoiYWRtaW4iLCJleHAiOjE3MzU4NzY1MjN9.SqXwvG8P0xzL4i0zYqZgaC7n2e8Zrju0aJjZVOXNJtU';
+                
+                console.log('Fetching work centers...');
+                const response = await fetch('/api/workcenters', { 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const workCenters = await response.json();
+                console.log('Work centers data:', workCenters);
+                console.log('Work centers count:', workCenters.length);
+                
+                if (workCenters.length > 0) {
+                    console.log('First work center:', workCenters[0]);
+                    console.log('First work center name:', workCenters[0].name);
+                    
+                    document.getElementById('result').innerHTML = `
+                        <h3>Success!</h3>
+                        <p>Found ${workCenters.length} work centers</p>
+                        <p>First work center name: ${workCenters[0].name}</p>
+                        <pre>${JSON.stringify(workCenters, null, 2)}</pre>
+                    `;
+                    
+                    // Test dropdown creation
+                    const select = document.createElement('select');
+                    workCenters.forEach(center => {
+                        const option = document.createElement('option');
+                        option.value = center.id;
+                        option.textContent = center.name;
+                        select.appendChild(option);
+                    });
+                    
+                    document.getElementById('result').appendChild(document.createElement('br'));
+                    document.getElementById('result').appendChild(select);
+                } else {
+                    document.getElementById('result').innerHTML = '<p>No work centers found</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run the test
+        testWorkCenters();
+    </script>
+</body>
+</html>
