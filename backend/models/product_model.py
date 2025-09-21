@@ -57,7 +57,7 @@ class Product:
         return products
     
     @classmethod
-    def get_all_products(cls, limit=None, skip=None):
+    def find_all(cls, limit=None, skip=None):
         """Get all products with pagination"""
         cursor = mongo.db.products.find({})
         if skip:
@@ -69,6 +69,12 @@ class Product:
         for product_data in cursor:
             products.append(cls(product_data).to_dict())
         return products
+    
+    @classmethod
+    def find_by_name_and_type(cls, name, product_type):
+        """Find product by name and type"""
+        product_data = mongo.db.products.find_one({'name': name, 'type': product_type})
+        return cls(product_data) if product_data else None
     
     def to_dict(self):
         """Convert product to dictionary"""

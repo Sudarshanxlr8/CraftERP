@@ -18,10 +18,17 @@ def create():
 
 @bom_bp.route('/boms', methods=['GET'])
 @token_required
-def get_all():
+@role_required(['Administrator', 'Manufacturing Manager', 'Production Planner'])
+def get_boms():
     return get_boms()
 
-@bom_bp.route('/boms/<string:bom_id>', methods=['PUT'])
+@bom_bp.route('/boms/<bom_id>', methods=['GET'])
+@token_required
+@role_required(['Administrator', 'Manufacturing Manager', 'Production Planner'])
+def get_bom_by_id(bom_id):
+    return get_bom(bom_id)
+
+@bom_bp.route('/boms/<bom_id>', methods=['PUT'])
 @token_required
 @role_required(['Administrator', 'Manufacturing Manager'])
 def update(bom_id):

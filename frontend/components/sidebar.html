@@ -1,0 +1,47 @@
+<aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+   <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+      <ul class="space-y-2 font-medium">
+         <li>
+            <a href="index.html" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <i class="bi bi-house-door-fill text-gray-500 group-hover:text-gray-900 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"></i>
+               <span class="ms-3">Dashboard</span>
+            </a>
+         </li>
+         <!-- Operator Links -->
+         <li class="sidebar-role-operator" style="display: none;">
+            <a href="wo_list.html" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <i class="bi bi-list-task text-gray-500 group-hover:text-gray-900 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"></i>
+               <span class="flex-1 ms-3 whitespace-nowrap">Work Order List</span>
+            </a>
+         </li>
+         <li class="sidebar-role-operator" style="display: none;">
+            <a href="wo_task.html" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <i class="bi bi-check-circle-fill text-gray-500 group-hover:text-gray-900 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"></i>
+               <span class="flex-1 ms-3 whitespace-nowrap">Work Order Task</span>
+            </a>
+         </li>
+         <li class="sidebar-role-operator" style="display: none;">
+            <a href="mo_detail.html" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <i class="bi bi-card-list text-gray-500 group-hover:text-gray-900 transition duration-75 dark:text-gray-400 dark:group-hover:text-white"></i>
+               <span class="flex-1 ms-3 whitespace-nowrap">MO Details</span>
+            </a>
+         </li>
+      </ul>
+   </div>
+</aside>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userRole = localStorage.getItem('userRole'); // Assuming role is stored in localStorage
+
+        if (userRole) {
+            const operatorLinks = document.querySelectorAll('.sidebar-role-operator');
+            // Add more role-specific selectors as needed
+
+            if (userRole === 'Operator') {
+                operatorLinks.forEach(link => link.style.display = 'block');
+            }
+            // Add more role-based display logic here
+        }
+    });
+</script>

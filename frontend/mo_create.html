@@ -46,7 +46,7 @@
                                 class="w-full px-4 py-3 bg-white/60 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200 hover:bg-white/80">
                             <option value="">Choose a BOM...</option>
                             <template x-for="bom in boms" :key="bom.id">
-                                <option :value="bom.id" x-text="bom.name"></option>
+                                <option :value="bom.id" x-text="bom.bom_id + ' (' + bom.product_name + ')'"></option>
                             </template>
                         </select>
                     </div>
@@ -249,7 +249,7 @@
 
                 async loadBOMs() {
                     try {
-                        const token = localStorage.getItem('access_token');
+                        const token = localStorage.getItem('token');
                         const response = await fetch('/api/boms', {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -257,7 +257,7 @@
                             }
                         });
                         const data = await response.json();
-                        this.boms = data.boms || [];
+                        this.boms = data || [];
                     } catch (error) {
                         console.error('Error loading BOMs:', error);
                         this.showNotification('Error loading BOMs', 'error');
@@ -269,7 +269,7 @@
                     try {
                         const response = await fetch('/api/operators', {
                             headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
                         });
                         const data = await response.json();
@@ -293,11 +293,11 @@
                     try {
                         const response = await fetch(`/api/boms/${this.form.bom_id}`, {
                             headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
                         });
                         const data = await response.json();
-                        this.selectedBOM = data.bom;
+                        this.selectedBOM = data;
                     } catch (error) {
                         console.error('Error loading BOM details:', error);
                         this.showNotification('Error loading BOM details', 'error');

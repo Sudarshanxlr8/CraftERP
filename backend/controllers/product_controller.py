@@ -22,7 +22,7 @@ def create_product():
 def get_products():
     products = Product.find_all()
     result = [{
-        'id': str(p['_id']),
+        'id': str(p['id']),
         'name': p['name'],
         'type': p['type'],
         'unit': p['unit'],
