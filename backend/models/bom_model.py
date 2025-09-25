@@ -59,6 +59,12 @@ class BOM:
         return [cls(bom) for bom in bom_data]
     
     @classmethod
+    def find_last_bom(cls):
+        """Find the last BOM based on bom_id"""
+        bom_data = mongo.db.boms.find_one(sort=[('bom_id', -1)])
+        return cls(bom_data).to_dict() if bom_data else None
+    
+    @classmethod
     def get_all_boms(cls, limit=None, skip=None):
         """Get all BOMs with pagination"""
         cursor = mongo.db.boms.find({})

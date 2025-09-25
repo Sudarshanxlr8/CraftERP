@@ -20,9 +20,9 @@ def get_user_profile():
 def get_all_users():
     """Get all users (Admin only)"""
     try:
-        users = User.find_all()
+        users = User.get_all_users()
         users_list = [{
-            'id': str(user['_id']),
+            'id': str(user['id']),
             'username': user['username'],
             'email': user['email'],
             'role': user['role']
@@ -33,6 +33,7 @@ def get_all_users():
             'total': len(users_list)
         }), 200
     except Exception as e:
+        print(f"Error in get_all_users: {e}") # Added for debugging
         return jsonify({'error': f'Failed to fetch users: {str(e)}'}), 500
 
 def update_profile():
@@ -70,3 +71,41 @@ def update_profile():
         User.update_by_id(str(user_data['_id']), update_data)
     
     return jsonify({'message': 'Profile updated'}), 200
+
+
+def create_user():
+    """Create a new user (Admin only)"""
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    role = data.get('role', 'User')
+
+    if not username or not email or not password:
+        return jsonify({'error': 'Missing username, email, or password'}), 400
+
+    if not validate_email(email):
+        return jsonify({'error': 'Invalid email format'}), 400
+
+    if not validate_password(password):
+        return jsonify({'error': 'Password does not meet requirements'}), 400
+
+    if User.find_by_username(username):
+        return jsonify({'error': 'Username already exists'}), 409
+
+    if User.find_by_email(email):
+        return jsonify({'error': 'Email already exists'}), 409
+
+    hashed_password = hash_password(password)
+    new_user = User.create(username, email, hashed_password, role)
+
+    return jsonify({'message': 'User created successfully', 'user': new_user.to_dict()}), 201
+
+def delete_user(user_id):
+    """Delete a user (Admin only)"""
+    user = User.find_by_id(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    User.delete_by_id(user_id)
+    return jsonify({'message': 'User deleted successfully'}), 200

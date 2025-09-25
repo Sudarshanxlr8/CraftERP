@@ -49,6 +49,13 @@ class User:
         user_data = mongo.db.users.find_one({'_id': user_id})
         return cls(user_data) if user_data else None
     
+    @classmethod
+    def delete_by_id(cls, user_id):
+        """Delete a user by ID"""
+        if isinstance(user_id, str):
+            user_id = ObjectId(user_id)
+        mongo.db.users.delete_one({'_id': user_id})
+    
     def to_dict(self):
         """Convert user to dictionary"""
         if not self.data:
@@ -59,9 +66,9 @@ class User:
             'email': self.data.get('email'),
             'role': self.data.get('role'),
             'is_active': self.data.get('is_active', True),
-            'last_login': self.data.get('last_login'),
-            'created_at': self.data.get('created_at'),
-            'updated_at': self.data.get('updated_at')
+            'last_login': self.data.get('last_login').isoformat() if self.data.get('last_login') else None,
+            'created_at': self.data.get('created_at').isoformat() if self.data.get('created_at') else None,
+            'updated_at': self.data.get('updated_at').isoformat() if self.data.get('updated_at') else None
         }
     
     def update_last_login(self):

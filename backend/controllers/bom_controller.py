@@ -161,3 +161,14 @@ def delete_bom(bom_id):
     BOMOperation.delete_by_bom_id(str(bom['_id']))
     BOM.delete_by_id(bom_id)
     return jsonify({'message': 'BOM deleted'}), 200
+
+
+def get_next_bom_id():
+    last_bom = BOM.find_last_bom()
+    if last_bom:
+        last_id_num = int(last_bom['bom_id'].split('-')[1])
+        next_id_num = last_id_num + 1
+        next_bom_id = f'BOM-{next_id_num:03d}'
+    else:
+        next_bom_id = 'BOM-001'
+    return jsonify({'next_bom_id': next_bom_id}), 200

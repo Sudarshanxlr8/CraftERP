@@ -69,15 +69,10 @@ init_error_handlers(app)
 # Path to frontend directory (relative to backend)
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'frontend')
 
-# Root route: Redirect to register page
+# Root route: Redirect to login page
 @app.route('/')
 def root():
-    return redirect('/register')
-
-# Route to serve register.html
-@app.route('/register')
-def serve_register():
-    return send_from_directory(FRONTEND_DIR, 'register.html')
+    return redirect('/login')
 
 # Route to serve login.html
 @app.route('/login')
