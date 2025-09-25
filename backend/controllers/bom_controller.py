@@ -12,13 +12,17 @@ def create_bom():
     if not all(key in data for key in required_fields):
         return jsonify({'error': 'Missing fields'}), 400
 
-    if BOM.find_by_bom_id(data['bom_id']):
+    bom_id = data['bom_id']
+    if not bom_id:
+        return jsonify({'error': 'BOM ID cannot be empty'}), 400
+
+    if BOM.find_by_bom_id(bom_id):
         return jsonify({'error': 'BOM ID already exists'}), 400
 
-    bom_id = BOM.create({
-        'bom_id': data['bom_id'],
-        'product_name': data['product_name']
-    })
+    bom_obj = BOM.create(
+        bom_id=bom_id,
+        product_name=data['product_name']
+    )
 
     for item in data['items']:
         raw_material_name = item['raw_material']['name']
@@ -29,29 +33,32 @@ def create_bom():
         if not raw_material:
             raw_material_data = {
                 'name': raw_material_name,
-                'type': 'raw',
-                'unit': unit
+                'description': f'Raw material {raw_material_name}',
+                'type': 'raw_material',
+                'unit_of_measurement': unit,
+                'current_stock_level': 0
             }
-            raw_material_id = Product.create(raw_material_data)
-        else:
-            raw_material_id = str(raw_material['_id'])
+            raw_material = Product.create(raw_material_data)
 
-        BOMItem.create({
-            'bom_id': str(bom_id),
-            'raw_material_id': raw_material_id,
-            'quantity': quantity,
-            'unit': unit
-        })
+        bom_obj.add_item(raw_material.to_dict()['id'], quantity, unit)
 
-    for op in data['operations']:
-        BOMOperation.create({
-            'bom_id': str(bom_id),
-            'operation_name': op['operation_name'],
-            'work_center_id': op['work_center_id'],
-            'duration': op['duration']
-        })
+    for operation in data['operations']:
+        operation_name = operation['operation_name']
+        work_center_name = operation['work_center']['name']
+        time_required = operation['time_required']
 
-    return jsonify({'message': 'BOM created successfully', 'id': str(bom_id)}), 201
+        work_center = WorkCenter.find_by_name(work_center_name)
+        if not work_center:
+            work_center_data = {
+                'name': work_center_name,
+                'description': f'Work center {work_center_name}',
+                'hourly_cost': 0.0
+            }
+            work_center = WorkCenter.create(work_center_data)
+
+        bom_obj.add_operation(operation_name, work_center.to_dict()['id'], time_required)
+
+    return jsonify({'message': 'BOM created successfully', 'bom_id': bom_obj.to_dict()['id']}), 201
 
 def get_boms():
     boms = BOM.get_all_boms()

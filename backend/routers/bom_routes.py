@@ -1,6 +1,6 @@
 from flask import Blueprint
 from middlewares.auth_middleware import token_required, role_required
-from controllers.bom_controller import create_bom, get_boms, update_bom, get_bom, render_bom_create_page
+from controllers.bom_controller import create_bom, get_boms, update_bom, get_bom, render_bom_create_page, get_next_bom_id
 
 bom_bp = Blueprint('bom', __name__)
 
@@ -9,6 +9,12 @@ bom_bp = Blueprint('bom', __name__)
 @role_required(['Administrator', 'Manufacturing Manager'])
 def bom_create_page():
     return render_bom_create_page()
+
+@bom_bp.route('/boms/next_id', methods=['GET'])
+@token_required
+@role_required(['Administrator', 'Manufacturing Manager'])
+def get_next_id():
+    return get_next_bom_id()
 
 @bom_bp.route('/boms', methods=['POST'])
 @token_required

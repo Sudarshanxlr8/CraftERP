@@ -32,9 +32,9 @@
                         <label for="bomId" class="block text-sm font-medium text-gray-700 mb-2">
                             BOM ID <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="bomId" name="bom_id" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="e.g., BOM-001">
+                        <input type="text" id="bomId" name="bom_id" readonly
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+                                      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100 cursor-not-allowed">
                     </div>
                     <div>
                         <label for="productName" class="block text-sm font-medium text-gray-700 mb-2">
@@ -140,8 +140,30 @@
         let finishedProducts = [], rawMaterials = [], workCenters = [];
         let componentRowCount = 0, operationRowCount = 0;
 
+        // Fetch and display next BOM ID on page load
+        async function fetchNextBomId() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/boms/next_id', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('bomId').value = data.next_bom_id;
+                } else {
+                    console.error('Failed to fetch next BOM ID');
+                }
+            } catch (error) {
+                console.error('Error fetching next BOM ID:', error);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async function() {
             await loadInitialData();
+            await fetchNextBomId(); // Call the new function
             addComponentRow();
             addOperationRow();
         });
@@ -338,13 +360,7 @@
         document.getElementById('bomForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const bomId = document.getElementById('bomId').value;
             const productName = document.getElementById('productName').value;
-            
-            if (!bomId) {
-                showMessage('Please enter a BOM ID.', 'error');
-                return;
-            }
             
             if (!productName) {
                 showMessage('Please enter a product name.', 'error');
@@ -390,11 +406,39 @@
             });
             
             const formData = {
-                bom_id: bomId,
                 product_name: productName,
                 items: components,
                 operations: operations
             };
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/boms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage(result.message, 'success');
+                    document.getElementById('bomForm').reset();
+                    document.getElementById('componentsBody').innerHTML = '';
+                    document.getElementById('operationsBody').innerHTML = '';
+                    addComponentRow();
+                    addOperationRow();
+                    fetchNextBomId(); // Fetch new BOM ID after successful creation
+                } else {
+                    showMessage(result.error || 'An error occurred', 'error');
+                }
+            } catch (error) {
+                console.error('Error creating BOM:', error);
+                showMessage('An error occurred while creating BOM', 'error');
+            }
             
             try {
                 const token = localStorage.getItem('token');

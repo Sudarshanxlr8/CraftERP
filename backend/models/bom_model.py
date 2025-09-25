@@ -12,8 +12,19 @@ class BOM:
         self.collection = mongo.db.boms
     
     @classmethod
-    def create(cls, bom_id, product_name, items=None, operations=None):
+    def generate_next_bom_id(cls):
+        last_bom = mongo.db.boms.find_one(sort=[('bom_id', -1)])
+        if last_bom and last_bom['bom_id']:
+            last_id_num = int(last_bom['bom_id'].split('-')[1])
+            next_id_num = last_id_num + 1
+            return f"BOM-{next_id_num:03d}"
+        return "BOM-001"
+
+    @classmethod
+    def create(cls, product_name, bom_id=None, items=None, operations=None):
         """Create a new BOM"""
+        if bom_id is None:
+            bom_id = cls.generate_next_bom_id()
         bom_data = {
             'bom_id': bom_id,
             'product_name': product_name,
