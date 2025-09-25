@@ -1,0 +1,154 @@
+<div id="sidebar" class="w-64 bg-white shadow-lg h-screen sticky top-0 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-800">Navigation</h2>
+        <button id="sidebarToggle" class="md:hidden p-2 focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="p-4 border-b border-gray-100">
+        <a href="/" class="w-full flex items-center p-3 text-left hover:bg-blue-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">🏠</span>
+                <span class="font-medium text-gray-700">Dashboard</span>
+            </div>
+        </a>
+    </div>
+    
+    <!-- Bill of Materials Dropdown -->
+    <div class="p-4 border-b border-gray-100" data-roles="Administrator,Manufacturing Manager">
+        <button onclick="toggleDropdown('bomDropdown')" class="w-full flex items-center justify-between p-3 text-left hover:bg-blue-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">📋</span>
+                <span class="font-medium text-gray-700">Bill of Materials</span>
+            </div>
+            <svg id="bomDropdown-icon" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div id="bomDropdown" class="hidden mt-2 ml-8 space-y-2">
+            <a href="/bom-create" class="block p-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors duration-150">➕ Create BOM</a>
+            <a href="/bom" class="block p-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors duration-150">📊 BOM List</a>
+        </div>
+    </div>
+    
+    <!-- Manufacturing Order Dropdown -->
+    <div class="p-4 border-b border-gray-100" data-roles="Administrator,Manufacturing Manager,Operator">
+        <button onclick="toggleDropdown('moDropdown')" class="w-full flex items-center justify-between p-3 text-left hover:bg-green-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">🏭</span>
+                <span class="font-medium text-gray-700">Manufacturing Order</span>
+            </div>
+            <svg id="moDropdown-icon" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div id="moDropdown" class="hidden mt-2 ml-8 space-y-2">
+            <a href="/mo-form" class="block p-2 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors duration-150" data-roles="Administrator,Manufacturing Manager">➕ Create MO</a>
+            <a href="/mo-detail" class="block p-2 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors duration-150">📋 MO Details</a>
+        </div>
+    </div>
+    
+    <!-- Work Order Dropdown -->
+    <div class="p-4 border-b border-gray-100" data-roles="Administrator,Manufacturing Manager,Operator">
+        <button onclick="toggleDropdown('woDropdown')" class="w-full flex items-center justify-between p-3 text-left hover:bg-orange-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">🔧</span>
+                <span class="font-medium text-gray-700">Work Order</span>
+            </div>
+            <svg id="woDropdown-icon" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div id="woDropdown" class="hidden mt-2 ml-8 space-y-2">
+            <a href="/wo-task" class="block p-2 text-sm text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors duration-150">⚙️ Work Tasks</a>
+            <a href="/wo-list" class="block p-2 text-sm text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors duration-150">📊 WO List</a>
+        </div>
+    </div>
+    
+    <!-- Inventory Dropdown -->
+    <div class="p-4 border-b border-gray-100" data-roles="Administrator,Manufacturing Manager,Inventory Manager">
+        <button onclick="toggleDropdown('inventoryDropdown')" class="w-full flex items-center justify-between p-3 text-left hover:bg-purple-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">📦</span>
+                <span class="font-medium text-gray-700">Inventory</span>
+            </div>
+            <svg id="inventoryDropdown-icon" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div id="inventoryDropdown" class="hidden mt-2 ml-8 space-y-2">
+            <a href="/inventory" class="block p-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors duration-150">📊 Inventory Management</a>
+        </div>
+    </div>
+    
+    <!-- Work Centre Dropdown -->
+    <div class="p-4 border-b border-gray-100" data-roles="Administrator,Manufacturing Manager">
+        <button onclick="toggleDropdown('wcDropdown')" class="w-full flex items-center justify-between p-3 text-left hover:bg-indigo-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">🏢</span>
+                <span class="font-medium text-gray-700">Work Centre</span>
+            </div>
+            <svg id="wcDropdown-icon" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div id="wcDropdown" class="hidden mt-2 ml-8 space-y-2">
+            <a href="/wc-create" class="block p-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors duration-150">➕ Create Work Center</a>
+            <a href="/wc-list" class="block p-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors duration-150">📊 WC List</a>
+        </div>
+    </div>
+    
+    <!-- Admin Users Management (Admin only) -->
+    <div id="adminUsersSection" class="p-4 border-b border-gray-100 hidden" data-roles="Administrator">
+        <a href="/users" class="w-full flex items-center p-3 text-left hover:bg-red-50 rounded-lg transition-colors duration-200">
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">👥</span>
+                <span class="font-medium text-gray-700">User Management</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<script>
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const icon = document.getElementById(id + '-icon');
+        dropdown.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        // Toggle sidebar visibility on smaller screens
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        }
+
+        // Close sidebar when clicking outside on smaller screens
+        document.addEventListener('click', (event) => {
+            if (window.innerWidth < 768 && !sidebar.contains(event.target) && sidebarToggle && !sidebarToggle.contains(event.target) && !sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        // Role-based access for sidebar items
+        const userRole = localStorage.getItem('userRole'); // Assuming role is stored in localStorage
+        if (userRole) {
+            document.querySelectorAll('[data-roles]').forEach(item => {
+                const roles = item.dataset.roles.split(',');
+                if (!roles.includes(userRole)) {
+                    item.classList.add('hidden');
+                } else {
+                    item.classList.remove('hidden');
+                }
+            });
+        }
+    });
+</script>

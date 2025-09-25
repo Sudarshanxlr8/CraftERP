@@ -188,7 +188,7 @@ def serve_navbar():
 # General route to serve any component files
 @app.route('/components/<path:filename>')
 def serve_components(filename):
-    return send_from_directory(FRONTEND_DIR, 'components', filename)
+    return send_from_directory(os.path.join(FRONTEND_DIR, 'components'), filename)
 
 # Route to serve JavaScript files from js directory
 @app.route('/js/<path:filename>')
